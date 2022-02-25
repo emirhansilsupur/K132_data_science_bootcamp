@@ -4,7 +4,6 @@ import pandas as pd
 
 # Creating a session object that will allow us to send requests to the website.
 session = HTMLSession()
-
 # Extracting the title, description and date of the news article.
 def scraping(topic):
     """
@@ -19,7 +18,7 @@ def scraping(topic):
     r = session.get(f"https://www.kdnuggets.com/tag/{topic}")
 
     # Rendering the page and scrolling down the page to load all the data.
-    r.html.render(sleep=1, scrolldown=1)
+    r.html.render(sleep=1, scrolldown=5)
 
     # Finding all the `ul` tags in the page.
     blogs = r.html.find("ul")
@@ -58,13 +57,14 @@ topics = [
     "natural-language-processing",
 ]
 
-all_blogs = list()
+dataset = list()
 
 # This is a for loop that is iterating through the list of topics and calling the function
 # topic_name() for each topic.
 for i in topics:
-    all_blogs += scraping(f"{i}")
+    dataset += scraping(i)
 
 # Creating a dataframe from the list of dictionaries and saving it as a csv file.
-df = pd.DataFrame(all_blogs)
+df = pd.DataFrame(dataset)
+df.drop_duplicates(subset="title", inplace=True)
 df.to_csv("KDnuggets_data.csv", index=False)
