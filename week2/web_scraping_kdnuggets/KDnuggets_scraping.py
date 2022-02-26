@@ -1,3 +1,4 @@
+from this import d
 from requests_html import HTMLSession
 import pandas as pd
 
@@ -5,20 +6,17 @@ import pandas as pd
 # Creating a session object that will allow us to send requests to the website.
 session = HTMLSession()
 # Extracting the title, description and date of the news article.
-def scraping(topic):
+def web_scraping():
     """
-    The function is scraping the website and extracting the data.
-
-    :param topic: The topic of the blog
-    :return: A list of dictionaries. Each dictionary contains the title, description, date, topic and
-    link of the news article.
+    This function is used to scrape the data from the website and store it in a list
+    :return: A list of dictionaries.
     """
 
     # Sending a GET request to the website and storing the response in `r`.
-    r = session.get(f"https://www.kdnuggets.com/tag/{topic}")
+    r = session.get("https://www.kdnuggets.com/tag/machine-learning")
 
     # Rendering the page and scrolling down the page to load all the data.
-    r.html.render(sleep=1, scrolldown=5)
+    r.html.render(sleep=1, scrolldown=1)
 
     # Finding all the `ul` tags in the page.
     blogs = r.html.find("ul")
@@ -48,23 +46,10 @@ def scraping(topic):
     return data
 
 
-topics = [
-    "artificial-intelligence",
-    "career-advice",
-    "computer-vision",
-    "data-science",
-    "machine-learning",
-    "natural-language-processing",
-]
-
 dataset = list()
-
-# This is a for loop that is iterating through the list of topics and calling the function
-# topic_name() for each topic.
-for i in topics:
-    dataset += scraping(i)
+dataset = web_scraping()
 
 # Creating a dataframe from the list of dictionaries and saving it as a csv file.
 df = pd.DataFrame(dataset)
-df.drop_duplicates(subset="title", inplace=True)
-df.to_csv("KDnuggets_data.csv", index=False)
+
+df.to_csv("KDnuggets_data_v1.csv", index=False)
